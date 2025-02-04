@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WordLikeFb"
+        xmlns:local="clr-namespace:WordLikeFb.Documents"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -24,6 +24,30 @@
         </Menu>
         </DockPanel>
         <!-- Область редактирования -->
-        <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,41,10,0" />
+        <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,20,10,0">
+            <FlowDocument>
+                <Section BorderThickness="1" BorderBrush="Black" Margin="5,5,5,5">
+                    <local:Title>
+                        <Run>*</Run>
+                    </local:Title>
+                    <Section BorderThickness="1" BorderBrush="Black" Margin="5,5,5,5">
+                        <local:Title>
+                            <Run>***</Run>
+                        </local:Title>
+                    </Section>
+                    <Paragraph>
+                        <Run>1212331</Run>
+                    </Paragraph>
+                    <Paragraph>
+                        <Run>1212331</Run>
+                    </Paragraph>
+                </Section>
+                <Section BorderThickness="1" BorderBrush="Black">
+                    <Paragraph>
+                        <Run>1212331</Run>
+                    </Paragraph>
+                </Section>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>
