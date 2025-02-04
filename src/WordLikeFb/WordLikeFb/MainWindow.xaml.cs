@@ -1,14 +1,9 @@
 ﻿using Microsoft.Win32;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 
 namespace WordLikeFb
@@ -115,12 +110,48 @@ namespace WordLikeFb
             }
         }
 
+        private void LoadFb2(string filePath)
+        {
+            var doc = FB2DocumentReader.Read(filePath);
+
+            FlowDocument flowDoc = new FlowDocument();
+
+            var bodyElemName = XName.Get("body", "http://www.gribuser.ru/xml/fictionbook/2.0");
+            var sectionElemName = XName.Get("section", "http://www.gribuser.ru/xml/fictionbook/2.0");
+            var pElemName = XName.Get("p", "http://www.gribuser.ru/xml/fictionbook/2.0");
+
+            foreach (XElement bodyElem in doc.Root.Elements(bodyElemName))
+            {
+                foreach (XElement sectionElem in bodyElem.Elements(sectionElemName))
+                {
+                    var section = new Section();
+
+                    foreach(XElement pElem in sectionElem.Elements(pElemName))
+                    {
+                        Paragraph p = new Paragraph();
+
+                        var val = pElem.Value;
+
+                        var t = Regex.Replace(val, @"\s+", " ");
+
+                        Run r = new Run(t);
+
+                        p.Inlines.Add(r);
+
+                        section.Blocks.Add(p);
+                    }
+
+                    flowDoc.Blocks.Add(section);
+                }
+            }
+            rtbEditor.Document = flowDoc;
+        }
+
         private void LoadXml(string filePath)
         {
             try
             {
-                var t = FontWeights.Bold;
-                XDocument doc = XDocument.Load(filePath);
+                XDocument doc = new XDocument(filePath);
                 FlowDocument flowDoc = new FlowDocument();
 
                 foreach (XElement paragraph in doc.Root.Elements("paragraph"))
@@ -157,6 +188,10 @@ namespace WordLikeFb
             }
         }
 
+        private void SaveFb2(string filePath)
+        {
+
+        }
         private void SaveXml(string filePath)
         {
             try
@@ -203,10 +238,19 @@ namespace WordLikeFb
         // Обработчик события нажатия кнопки "Открыть"
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var openDialog = new OpenFileDialog { Filter = "XML Files|*.xml" };
+            var openDialog = new OpenFileDialog { Filter = "XML Files|*.xml|FB2 Files|*.fb2" };
             if (openDialog.ShowDialog() == true)
             {
-                LoadXml(openDialog.FileName);
+                var ext = System.IO.Path.GetExtension(openDialog.FileName);
+                switch (ext)
+                {
+                    case AllowedFilesExtensions.XML:
+                        LoadXml(openDialog.FileName);
+                        break;
+                    case AllowedFilesExtensions.FB2:
+                        LoadFb2(openDialog.FileName);
+                        break;
+                }
             }
         }
 
