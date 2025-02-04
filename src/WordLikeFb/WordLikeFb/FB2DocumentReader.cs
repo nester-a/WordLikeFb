@@ -22,6 +22,7 @@ namespace WordLikeFb
             var settings = new XmlReaderSettings()
             {
                 ValidationType = ValidationType.Schema,
+                IgnoreWhitespace = true,
                 Schemas = schemas,
             };
 

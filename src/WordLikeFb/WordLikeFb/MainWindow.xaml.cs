@@ -128,15 +128,31 @@ namespace WordLikeFb
 
                     foreach(XElement pElem in sectionElem.Elements(pElemName))
                     {
-                        Paragraph p = new Paragraph();
+                        var p = new Paragraph();
 
-                        var val = pElem.Value;
+                        var nodes = pElem.Nodes();
+                        foreach (var node in nodes)
+                        {
+                            var run = new Run();
 
-                        var t = Regex.Replace(val, @"\s+", " ");
-
-                        Run r = new Run(t);
-
-                        p.Inlines.Add(r);
+                            if (node is XText text)
+                            {
+                                var value = Regex.Replace(text.Value, @"\s+", " ");
+                                run.Text = value;
+                            }
+                            else if(node is XElement element)
+                            {
+                                switch (element.Name.LocalName)
+                                {
+                                    case "emphasis":
+                                        run.FontStyle = FontStyles.Italic; 
+                                        break;
+                                }
+                                var value = Regex.Replace(element.Value, @"\s+", " ");
+                                run.Text = value;
+                            }
+                            p.Inlines.Add(run);
+                        }
 
                         section.Blocks.Add(p);
                     }
