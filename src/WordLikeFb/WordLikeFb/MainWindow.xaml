@@ -7,6 +7,23 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <DockPanel LastChildFill="False" Margin="0,0,0,10" VerticalAlignment="Top">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Новый" Click="NewFile_Click"/>
+                <MenuItem Header="_Открыть" Click="OpenFile_Click"/>
+                <MenuItem Header="_Сохранить" Click="SaveFile_Click"/>
+                <Separator/>
+                <MenuItem Header="_Выход" Click="ExitApp_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Форматирование">
+                <MenuItem Header="_Полужирный" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked"/>
+                <MenuItem Header="_Курсив" IsCheckable="True" Checked="Italic_Checked" Unchecked="Italic_Unchecked"/>
+                <MenuItem Header="_Подчёркнутый" IsCheckable="True" Checked="Underline_Checked" Unchecked="Underline_Unchecked"/>
+            </MenuItem>
+        </Menu>
+        </DockPanel>
+        <!-- Область редактирования -->
+        <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,41,10,0" />
     </Grid>
 </Window>
