@@ -14,11 +14,6 @@ namespace WordLikeFb.Extensions
 
         public static void FillTextElement(this XNode node, FrameworkContentElement contentElement)
         {
-            if(node == null)
-            {
-                return;
-            }
-
             if(node is XText text)
             {
                 var run = (Run)(contentElement is Run ? contentElement : new Run());
