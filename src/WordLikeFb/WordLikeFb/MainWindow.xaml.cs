@@ -146,6 +146,9 @@ namespace WordLikeFb
                                     case "emphasis":
                                         run.FontStyle = FontStyles.Italic; 
                                         break;
+                                    case "strong":
+                                        run.FontWeight = FontWeights.Bold;
+                                        break;
                                 }
                                 var value = Regex.Replace(element.Value, @"\s+", " ");
                                 run.Text = value;
