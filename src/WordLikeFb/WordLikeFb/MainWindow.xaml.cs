@@ -116,13 +116,16 @@ namespace WordLikeFb
         {
             var doc = FB2DocumentReader.Read(filePath);
 
-            FlowDocument flowDoc = new FlowDocument();
+            var flowDoc = new FlowDocument();
 
             var bodyElemName = XName.Get("body", "http://www.gribuser.ru/xml/fictionbook/2.0");
-            var sectionElemName = XName.Get("section", "http://www.gribuser.ru/xml/fictionbook/2.0");
-            var pElemName = XName.Get("p", "http://www.gribuser.ru/xml/fictionbook/2.0");
 
-            foreach (XElement bodyElem in doc.Root.Elements(bodyElemName))
+            var bodies = doc.Root?.Elements(bodyElemName);
+
+            if (bodies is null)
+                return;
+
+            foreach (XElement bodyElem in bodies)
             {
                 var nodes = bodyElem.Nodes();
 
@@ -132,47 +135,6 @@ namespace WordLikeFb
                 }
             }
             rtbEditor.Document = flowDoc;
-        }
-
-        private void LoadXml(string filePath)
-        {
-            try
-            {
-                XDocument doc = new XDocument(filePath);
-                FlowDocument flowDoc = new FlowDocument();
-
-                foreach (XElement paragraph in doc.Root.Elements("paragraph"))
-                {
-                    Paragraph p = new Paragraph();
-                    p.FontSize = double.Parse(paragraph.Attribute("fontSize").Value);
-                    p.FontFamily = new FontFamily(paragraph.Attribute("fontFamily").Value);
-                    p.TextAlignment = (TextAlignment)Enum.Parse(typeof(TextAlignment), paragraph.Attribute("textAlignment").Value);
-
-                    foreach (XElement run in paragraph.Elements("run"))
-                    {
-                        Run r = new Run(run.Value);
-                        r.FontWeight = run.Attribute("fontWeight")?.Value switch
-                        {
-                            "Bold" => FontWeights.Bold,
-                            _ => FontWeights.Normal
-                        };
-                        r.FontStyle = run.Attribute("fontStyle")?.Value switch
-                        {
-                            "Italic" => FontStyles.Italic,
-                            _ => FontStyles.Normal
-                        };
-                        p.Inlines.Add(r);
-                    }
-
-                    flowDoc.Blocks.Add(p);
-                }
-
-                rtbEditor.Document = flowDoc;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при загрузке файла: {ex.Message}");
-            }
         }
 
         private void SaveFb2(string filePath)
@@ -225,15 +187,12 @@ namespace WordLikeFb
         // Обработчик события нажатия кнопки "Открыть"
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var openDialog = new OpenFileDialog { Filter = "XML Files|*.xml|FB2 Files|*.fb2" };
+            var openDialog = new OpenFileDialog { Filter = "FB2 Files|*.fb2" };
             if (openDialog.ShowDialog() == true)
             {
                 var ext = System.IO.Path.GetExtension(openDialog.FileName);
                 switch (ext)
                 {
-                    case AllowedFilesExtensions.XML:
-                        LoadXml(openDialog.FileName);
-                        break;
                     case AllowedFilesExtensions.FB2:
                         LoadFb2(openDialog.FileName);
                         break;
