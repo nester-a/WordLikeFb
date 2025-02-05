@@ -4,6 +4,9 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Xml.Linq;
+using WordLikeFb.Documents;
+using WordLikeFb.Extensions;
+using static System.Collections.Specialized.BitVector32;
 
 namespace WordLikeFb
 {
@@ -121,45 +124,11 @@ namespace WordLikeFb
 
             foreach (XElement bodyElem in doc.Root.Elements(bodyElemName))
             {
-                foreach (XElement sectionElem in bodyElem.Elements(sectionElemName))
+                var nodes = bodyElem.Nodes();
+
+                foreach(var node in nodes)
                 {
-                    var section = new Section();
-
-                    foreach(XElement pElem in sectionElem.Elements(pElemName))
-                    {
-                        var p = new Paragraph();
-
-                        var nodes = pElem.Nodes();
-                        foreach (var node in nodes)
-                        {
-                            var run = new Run();
-
-                            if (node is XText text)
-                            {
-                                var value = Regex.Replace(text.Value, @"\s+", " ");
-                                run.Text = value;
-                            }
-                            else if(node is XElement element)
-                            {
-                                switch (element.Name.LocalName)
-                                {
-                                    case "emphasis":
-                                        run.FontStyle = FontStyles.Italic; 
-                                        break;
-                                    case "strong":
-                                        run.FontWeight = FontWeights.Bold;
-                                        break;
-                                }
-                                var value = Regex.Replace(element.Value, @"\s+", " ");
-                                run.Text = value;
-                            }
-                            p.Inlines.Add(run);
-                        }
-
-                        section.Blocks.Add(p);
-                    }
-
-                    flowDoc.Blocks.Add(section);
+                    node.FillTextElement(flowDoc);
                 }
             }
             rtbEditor.Document = flowDoc;
