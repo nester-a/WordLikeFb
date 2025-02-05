@@ -34,8 +34,10 @@ namespace WordLikeFb.Extensions
             {
                 var elementName = element.Name.LocalName;
                 var childs = element.Nodes();
-                
-                if(_inlines.Any(el => el.Equals(elementName)))
+
+                FrameworkContentElement? currentElement = null;
+
+                if (_inlines.Any(el => el.Equals(elementName)))
                 {
                     var run = (Run)(contentElement is Run ? contentElement : new Run());
                     switch (elementName)
@@ -47,15 +49,12 @@ namespace WordLikeFb.Extensions
                             run.FontWeight = FontWeights.Bold;
                             break;
                     }
-                    foreach (var child in childs)
-                    {
-                        child.FillTextElement(run);
-                    }
 
                     if (contentElement is Paragraph paragraph)
                     {
                         paragraph.Inlines.Add(run);
                     }
+                    currentElement = run;
                 }
                 else if(_blocks.Any(b => b.Equals(elementName)))
                 {
@@ -72,15 +71,22 @@ namespace WordLikeFb.Extensions
                             return;
                     }
 
-                    foreach (var child in childs)
-                    {
-                        child.FillTextElement(block);
-                    }
-
                     if(contentElement is IAddChild paragraph)
                     {
                         paragraph.AddChild(block);
                     }
+
+                    currentElement = block;
+                }
+
+                if(currentElement is null)
+                {
+                    return;
+                }
+
+                foreach (var child in childs)
+                {
+                    child.FillTextElement(currentElement);
                 }
             }
         }
