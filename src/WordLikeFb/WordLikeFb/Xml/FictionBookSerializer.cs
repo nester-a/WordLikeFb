@@ -1,13 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Documents;
 using System.Xml.Linq;
+using WordLikeFb.Documents;
 using WordLikeFb.Factories;
 
 namespace WordLikeFb.Xml
 {
     internal static class FictionBookSerializer
     {
-        static XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
+        static readonly XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
 
         public static XNode? Serialize(FrameworkContentElement content)
         {
@@ -16,11 +17,13 @@ namespace WordLikeFb.Xml
                 var doc = new XDocument(new XDeclaration("1.0", "iso-8859-1", "yes"));
                 var root = FictionBookElementsFactory.CreateFictionBookRoot(_fb);
                 doc.Add(root);
+                var body = new XElement(_fb + "body");
+                root.Add(body);
 
                 foreach(var block in document.Blocks)
                 {
                     var element = Serialize(block);
-                    root.Add(element);
+                    body.Add(element);
                 }
                 return doc;
             }
@@ -35,6 +38,18 @@ namespace WordLikeFb.Xml
                 }
 
                 return sect;
+            }
+            else if(content is Title title)
+            {
+                var t = new XElement(_fb + "title");
+
+                foreach (var block in title.Inlines)
+                {
+                    var txt = block is Run run ? run.Text : "";
+                    t.Add(new XText(txt));
+                }
+
+                return t;
             }
             else if(content is Paragraph paragraph)
             {
