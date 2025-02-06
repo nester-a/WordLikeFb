@@ -1,7 +1,9 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
+using WordLikeFb.Extensions;
 using WordLikeFb.Factories;
 
 namespace WordLikeFb.Xml
@@ -9,6 +11,35 @@ namespace WordLikeFb.Xml
     internal static class FictionBookSerializer
     {
         static readonly XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
+
+        public static FrameworkContentElement? Deserialize(XNode node)
+        {
+            if (node is XDocument document)
+            {
+                var flowDoc = new FlowDocument();
+
+                var bodyElemName = FictionBookElementsFactory.CreateBodyName();
+                var bodies = document.Root?.Elements(bodyElemName);
+
+                var childs = bodies?.Nodes() ?? [];
+
+                foreach (var child in childs)
+                {
+                    var elem = Deserialize(child);
+                    flowDoc.Blocks.Add(elem as Block);
+                }
+                return flowDoc;
+            }
+            else if(node is XElement element)
+            {
+
+            }
+            else if(node is XText text)
+            {
+                var run = new Run();
+            }
+        }
+
 
         public static XNode? Serialize(FrameworkContentElement content)
         {
