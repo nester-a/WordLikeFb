@@ -4,9 +4,11 @@ namespace WordLikeFb.Factories
 {
     internal class FictionBookElementsFactory
     {
-        public static XElement CreateFictionBookRoot(params XElement[] elements)
+        public static XElement CreateFictionBookRoot(XNamespace @namespace)
         {
-            var root = new XElement("FictionBook", new XAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink"), new XAttribute("xmlns", "http://www.gribuser.ru/xml/fictionbook/2.0"));
+            XNamespace xlink = "http://www.w3.org/1999/xlink";
+            var links = new XAttribute(XNamespace.Xmlns + "xlink", xlink);
+            var root = new XElement(@namespace + "FictionBook", links);
 
             return root;
         }

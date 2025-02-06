@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using WordLikeFb.Documents;
 using WordLikeFb.Extensions;
 using WordLikeFb.Factories;
+using WordLikeFb.Xml;
 using static System.Collections.Specialized.BitVector32;
 
 namespace WordLikeFb
@@ -140,28 +141,10 @@ namespace WordLikeFb
 
         private void SaveFb2(string filePath)
         {
-            var doc = new XDocument(new XDeclaration("1.0", "iso-8859-1", "yes"));
 
-            var root = FictionBookElementsFactory.CreateFictionBookRoot();
-
-            doc.Add(root);
-
-            var bodyElemName = FictionBookElementsFactory.CreateBodyName();
-
-            var bodies = root.Elements(bodyElemName);
-
-            if (bodies is null)
-                return;
-
-            foreach (Block block in rtbEditor.Document.Blocks)
-            {
-                if(block is System.Windows.Documents.Section section)
-                {
-                    var sectElem = new XElement("section");
-                }
-                else if()
-            }
-
+            var doc = FictionBookSerializer.Serialize(rtbEditor.Document);
+            var s = doc.ToString();
+            (doc as XDocument).Save(filePath);
         }
 
         private void SaveXml(string filePath)
@@ -226,10 +209,10 @@ namespace WordLikeFb
         // Обработчик события нажатия кнопки "Сохранить"
         private void SaveFile_Click(object sender, RoutedEventArgs e)
         {
-            var saveDialog = new SaveFileDialog { Filter = "XML Files|*.xml" };
+            var saveDialog = new SaveFileDialog { Filter = "FB2 Files|*.fb2" };
             if (saveDialog.ShowDialog() == true)
             {
-                SaveXml(saveDialog.FileName);
+                SaveFb2(saveDialog.FileName);
             }
         }
     }

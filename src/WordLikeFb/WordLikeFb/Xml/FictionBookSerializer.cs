@@ -7,12 +7,14 @@ namespace WordLikeFb.Xml
 {
     internal static class FictionBookSerializer
     {
+        static XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
+
         public static XNode? Serialize(FrameworkContentElement content)
         {
             if (content is FlowDocument document)
             {
                 var doc = new XDocument(new XDeclaration("1.0", "iso-8859-1", "yes"));
-                var root = FictionBookElementsFactory.CreateFictionBookRoot();
+                var root = FictionBookElementsFactory.CreateFictionBookRoot(_fb);
                 doc.Add(root);
 
                 foreach(var block in document.Blocks)
@@ -24,7 +26,7 @@ namespace WordLikeFb.Xml
             }
             else if (content is Section section)
             {
-                var sect = new XElement("section");
+                var sect = new XElement(_fb + "section");
 
                 foreach (var block in section.Blocks)
                 {
@@ -36,7 +38,7 @@ namespace WordLikeFb.Xml
             }
             else if(content is Paragraph paragraph)
             {
-                var p = new XElement("p");
+                var p = new XElement(_fb + "p");
 
                 foreach (var block in paragraph.Inlines)
                 {
@@ -52,12 +54,12 @@ namespace WordLikeFb.Xml
 
                 if (run.FontWeight == FontWeights.Bold)
                 {
-                    el = new XElement("strong");
+                    el = new XElement(_fb + "strong");
                 }
 
                 if (run.FontStyle == FontStyles.Italic)
                 {
-                    var italic = new XElement("italic");
+                    var italic = new XElement(_fb + "italic");
                     if (el == null)
                     {
                         el = italic;
