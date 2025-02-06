@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
 using WordLikeFb.Extensions;
+using WordLikeFb.Factories;
 using static System.Collections.Specialized.BitVector32;
 
 namespace WordLikeFb
@@ -118,7 +119,7 @@ namespace WordLikeFb
 
             var flowDoc = new FlowDocument();
 
-            var bodyElemName = XName.Get("body", "http://www.gribuser.ru/xml/fictionbook/2.0");
+            var bodyElemName = FictionBookElementsFactory.CreateBodyName();
 
             var bodies = doc.Root?.Elements(bodyElemName);
 
@@ -139,8 +140,30 @@ namespace WordLikeFb
 
         private void SaveFb2(string filePath)
         {
+            var doc = new XDocument(new XDeclaration("1.0", "iso-8859-1", "yes"));
+
+            var root = FictionBookElementsFactory.CreateFictionBookRoot();
+
+            doc.Add(root);
+
+            var bodyElemName = FictionBookElementsFactory.CreateBodyName();
+
+            var bodies = root.Elements(bodyElemName);
+
+            if (bodies is null)
+                return;
+
+            foreach (Block block in rtbEditor.Document.Blocks)
+            {
+                if(block is System.Windows.Documents.Section section)
+                {
+                    var sectElem = new XElement("section");
+                }
+                else if()
+            }
 
         }
+
         private void SaveXml(string filePath)
         {
             try
