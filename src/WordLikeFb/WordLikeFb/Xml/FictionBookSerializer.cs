@@ -21,9 +21,14 @@ namespace WordLikeFb.Xml
             {
                 var flowDoc = new FlowDocument();
 
-                var childs = document.Nodes();
+                var bodyElemName = FictionBookElementsFactory.CreateBodyName();
 
-                foreach (var child in childs)
+                var bodies = document.Root?.Elements(bodyElemName);
+
+                if (bodies is null)
+                    return null;
+
+                foreach (var child in bodies)
                 {
                     var childElement = Deserialize(child);
                     if (childElement != null && childElement is Block addChild)
@@ -93,7 +98,16 @@ namespace WordLikeFb.Xml
                 foreach (var child in childs)
                 {
                     var childElement = Deserialize(child);
-                    if (childElement != null && currentElement is IAddChild addChild)
+
+                    if(childElement is null)
+                    {
+                        continue;
+                    }
+                    if(currentElement is Run curRun && childElement is Run childRun)
+                    {
+                        curRun.Text += childRun.Text;
+                    }
+                    else if (currentElement is IAddChild addChild)
                     {
                         addChild.AddChild(childElement);
                     }
