@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
-using WordLikeFb.Extensions;
 using WordLikeFb.Factories;
 
 namespace WordLikeFb.Xml
@@ -11,33 +12,97 @@ namespace WordLikeFb.Xml
     internal static class FictionBookSerializer
     {
         static readonly XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
+        static readonly string[] _inlines = { "emphasis", "strong" };
+        static readonly string[] _blocks = { "body", "section", "title", "p" };
 
         public static FrameworkContentElement? Deserialize(XNode node)
         {
-            if (node is XDocument document)
+            if(node is XDocument document)
             {
                 var flowDoc = new FlowDocument();
 
-                var bodyElemName = FictionBookElementsFactory.CreateBodyName();
-                var bodies = document.Root?.Elements(bodyElemName);
-
-                var childs = bodies?.Nodes() ?? [];
+                var childs = document.Nodes();
 
                 foreach (var child in childs)
                 {
-                    var elem = Deserialize(child);
-                    flowDoc.Blocks.Add(elem as Block);
+                    var childElement = Deserialize(child);
+                    if (childElement != null && childElement is Block addChild)
+                    {
+                        flowDoc.Blocks.Add(addChild);
+                    }
                 }
+
                 return flowDoc;
             }
-            else if(node is XElement element)
-            {
-
-            }
-            else if(node is XText text)
+            else if (node is XText text)
             {
                 var run = new Run();
+                var value = Regex.Replace(text.Value, @"\s+", " ");
+                run.Text += value;
+                return run;
             }
+            else if (node is XElement element)
+            {
+                var elementName = element.Name.LocalName;
+                var childs = element.Nodes();
+
+                FrameworkContentElement? currentElement = null;
+
+                if (_inlines.Contains(elementName))
+                {
+                    var run = new Run();
+                    switch (elementName)
+                    {
+                        case "emphasis":
+                            run.FontStyle = FontStyles.Italic;
+                            break;
+                        case "strong":
+                            run.FontWeight = FontWeights.Bold;
+                            break;
+                    }
+                    currentElement = run;
+                }
+                else if (_blocks.Contains(elementName))
+                {
+                    Block block;
+                    switch (elementName)
+                    {
+                        case "body":
+                            block = new Body();
+                            break;
+                        case "section":
+                            block = new Section();
+                            break;
+                        case "title":
+                            block = new Title();
+                            break;
+                        case "p":
+                            block = new Paragraph();
+                            break;
+                        default:
+                            return null;
+                    }
+                    currentElement = block;
+                }
+
+                if (currentElement == null)
+                {
+                    return null;
+                }
+
+                foreach (var child in childs)
+                {
+                    var childElement = Deserialize(child);
+                    if (childElement != null && currentElement is IAddChild addChild)
+                    {
+                        addChild.AddChild(childElement);
+                    }
+                }
+
+                return currentElement;
+            }
+
+            return null;
         }
 
 
@@ -48,15 +113,24 @@ namespace WordLikeFb.Xml
                 var doc = new XDocument(new XDeclaration("1.0", "iso-8859-1", "yes"));
                 var root = FictionBookElementsFactory.CreateFictionBookRoot(_fb);
                 doc.Add(root);
-                var body = new XElement(_fb + "body");
-                root.Add(body);
 
                 foreach(var block in document.Blocks)
                 {
                     var element = Serialize(block);
-                    body.Add(element);
+                    root.Add(element);
                 }
                 return doc;
+            }
+            else if (content is Body body)
+            {
+                var b = new XElement(_fb + "body");
+
+                foreach (var block in body.Blocks)
+                {
+                    var element = Serialize(block);
+                    b.Add(element);
+                }
+                return b;
             }
             else if (content is Section section)
             {

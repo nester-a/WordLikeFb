@@ -118,7 +118,7 @@ namespace WordLikeFb
         {
             var doc = FB2DocumentReader.Read(filePath);
 
-            var flowDoc = new FlowDocument();
+            var flowDoc = FictionBookSerializer.Deserialize(doc);
 
             var bodyElemName = FictionBookElementsFactory.CreateBodyName();
 
@@ -136,14 +136,12 @@ namespace WordLikeFb
                     node.FillTextElement(flowDoc);
                 }
             }
-            rtbEditor.Document = flowDoc;
+            rtbEditor.Document = flowDoc as FlowDocument;
         }
 
         private void SaveFb2(string filePath)
         {
-
             var doc = FictionBookSerializer.Serialize(rtbEditor.Document);
-            var s = doc.ToString();
             (doc as XDocument).Save(filePath);
         }
 
