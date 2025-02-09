@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Xml.Linq;
+using WordLikeFb.Documents;
 using WordLikeFb.Xml;
 
 namespace WordLikeFb
@@ -14,6 +15,23 @@ namespace WordLikeFb
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Create_SubSection(object sender, RoutedEventArgs e)
+        {
+            TextSelection selection = rtbEditor.Selection;
+            var currentParagraph = selection.Start.Paragraph;
+            var parentSection = currentParagraph.Parent as Section;
+
+            var newSection = new Section();
+            var title = new Title();
+            newSection.Blocks.Add(title);
+
+            var nP = new Paragraph();
+            newSection.Blocks.Add(nP);
+            parentSection?.Blocks.Add(newSection);
+
+            rtbEditor.CaretPosition = nP.ContentStart;
         }
 
         // Обработчик события нажатия кнопки "Новый"

@@ -141,6 +141,18 @@ namespace WordLikeFb.Xml
                 }
                 return b;
             }
+            else if (content is Title title)
+            {
+                var t = new XElement(_fb + "title");
+
+                foreach (var block in title.Blocks)
+                {
+                    var element = Serialize(block);
+                    t.Add(element);
+                }
+
+                return t;
+            }
             else if (content is Section section)
             {
                 var sect = new XElement(_fb + "section");
@@ -152,18 +164,6 @@ namespace WordLikeFb.Xml
                 }
 
                 return sect;
-            }
-            else if(content is Title title)
-            {
-                var t = new XElement(_fb + "title");
-
-                foreach (var block in title.Blocks)
-                {
-                    var element = Serialize(block);
-                    t.Add(element);
-                }
-
-                return t;
             }
             else if(content is Paragraph paragraph)
             {

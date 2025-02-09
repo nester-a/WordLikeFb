@@ -16,6 +16,10 @@
                 <Separator/>
                 <MenuItem Header="_Выход" Click="ExitApp_Click"/>
             </MenuItem>
+                <MenuItem Header="_Структура">
+                    <MenuItem Header="Добавить подсекцию" Click="Create_SubSection"/>
+                    <MenuItem Header="Закрыть секцию"/>
+                </MenuItem>
             <MenuItem Header="_Форматирование">
                 <MenuItem Header="_Полужирный" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked"/>
                 <MenuItem Header="_Курсив" IsCheckable="True" Checked="Italic_Checked" Unchecked="Italic_Unchecked"/>
