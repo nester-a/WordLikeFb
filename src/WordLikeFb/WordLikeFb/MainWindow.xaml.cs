@@ -120,22 +120,6 @@ namespace WordLikeFb
 
             var flowDoc = FictionBookSerializer.Deserialize(doc);
 
-            var bodyElemName = FictionBookElementsFactory.CreateBodyName();
-
-            var bodies = doc.Root?.Elements(bodyElemName);
-
-            if (bodies is null)
-                return;
-
-            foreach (XElement bodyElem in bodies)
-            {
-                var nodes = bodyElem.Nodes();
-
-                foreach(var node in nodes)
-                {
-                    node.FillTextElement(flowDoc);
-                }
-            }
             rtbEditor.Document = flowDoc as FlowDocument;
         }
 

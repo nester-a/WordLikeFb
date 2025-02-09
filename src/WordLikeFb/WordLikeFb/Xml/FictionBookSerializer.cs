@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
+using WordLikeFb.Extensions;
 using WordLikeFb.Factories;
 
 namespace WordLikeFb.Xml
@@ -15,37 +16,20 @@ namespace WordLikeFb.Xml
         static readonly string[] _inlines = { "emphasis", "strong" };
         static readonly string[] _blocks = { "body", "section", "title", "p" };
 
-        public static FrameworkContentElement? Deserialize(XNode node)
+        static FrameworkContentElement? DeserializeByParent(XNode node, FrameworkContentElement parent)
         {
-            if(node is XDocument document)
+            if (node is XText text)
             {
-                var flowDoc = new FlowDocument();
-
-                var bodyElemName = FictionBookElementsFactory.CreateBodyName();
-
-                var bodies = document.Root?.Elements(bodyElemName);
-
-                if (bodies is null)
-                    return null;
-
-                foreach (var child in bodies)
-                {
-                    var childElement = Deserialize(child);
-                    if (childElement != null && childElement is Block addChild)
-                    {
-                        flowDoc.Blocks.Add(addChild);
-                    }
-                }
-
-                return flowDoc;
-            }
-            else if (node is XText text)
-            {
-                var run = new Run();
+                var run = (Run)(parent is Run ? parent : new Run());
                 var value = Regex.Replace(text.Value, @"\s+", " ");
                 run.Text += value;
-                return run;
+
+                if (parent is Paragraph paragraph)
+                {
+                    paragraph.Inlines.Add(run);
+                }
             }
+
             else if (node is XElement element)
             {
                 var elementName = element.Name.LocalName;
@@ -53,9 +37,9 @@ namespace WordLikeFb.Xml
 
                 FrameworkContentElement? currentElement = null;
 
-                if (_inlines.Contains(elementName))
+                if (_inlines.Any(el => el.Equals(elementName)))
                 {
-                    var run = new Run();
+                    var run = (Run)(parent is Run ? parent : new Run());
                     switch (elementName)
                     {
                         case "emphasis":
@@ -65,9 +49,14 @@ namespace WordLikeFb.Xml
                             run.FontWeight = FontWeights.Bold;
                             break;
                     }
+
+                    if (parent is Paragraph paragraph)
+                    {
+                        paragraph.Inlines.Add(run);
+                    }
                     currentElement = run;
                 }
-                else if (_blocks.Contains(elementName))
+                else if (_blocks.Any(b => b.Equals(elementName)))
                 {
                     Block block;
                     switch (elementName)
@@ -78,45 +67,55 @@ namespace WordLikeFb.Xml
                         case "section":
                             block = new Section();
                             break;
-                        case "title":
-                            block = new Title();
-                            break;
                         case "p":
                             block = new Paragraph();
                             break;
                         default:
                             return null;
                     }
+
+                    if (parent is IAddChild paragraph)
+                    {
+                        paragraph.AddChild(block);
+                    }
+
                     currentElement = block;
                 }
 
-                if (currentElement == null)
+                if (currentElement is null)
                 {
                     return null;
                 }
 
                 foreach (var child in childs)
                 {
-                    var childElement = Deserialize(child);
-
-                    if(childElement is null)
-                    {
-                        continue;
-                    }
-                    if(currentElement is Run curRun && childElement is Run childRun)
-                    {
-                        curRun.Text += childRun.Text;
-                    }
-                    else if (currentElement is IAddChild addChild)
-                    {
-                        addChild.AddChild(childElement);
-                    }
+                    child.FillTextElement(currentElement);
                 }
+            }
+            return null;
+        }
 
-                return currentElement;
+        public static FrameworkContentElement? Deserialize(XDocument document)
+        {
+            var flowDoc = new FlowDocument();
+
+            var bodyElemName = FictionBookElementsFactory.CreateBodyName();
+
+            var bodies = document.Root?.Elements(bodyElemName);
+
+            if (bodies is null)
+                return null;
+
+            foreach (var child in bodies)
+            {
+                var childElement = DeserializeByParent(child, flowDoc);
+                if (childElement != null && childElement is Block addChild)
+                {
+                    flowDoc.Blocks.Add(addChild);
+                }
             }
 
-            return null;
+            return flowDoc;
         }
 
 
