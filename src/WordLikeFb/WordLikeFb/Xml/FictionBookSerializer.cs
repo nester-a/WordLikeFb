@@ -1,11 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
-using WordLikeFb.Extensions;
 using WordLikeFb.Factories;
 
 namespace WordLikeFb.Xml

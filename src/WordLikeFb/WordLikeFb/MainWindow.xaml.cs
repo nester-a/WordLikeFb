@@ -1,14 +1,8 @@
 ﻿using Microsoft.Win32;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Media;
 using System.Xml.Linq;
-using WordLikeFb.Documents;
-using WordLikeFb.Extensions;
-using WordLikeFb.Factories;
 using WordLikeFb.Xml;
-using static System.Collections.Specialized.BitVector32;
 
 namespace WordLikeFb
 {
