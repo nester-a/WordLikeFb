@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Xml.Linq;
 using WordLikeFb.Documents;
+using WordLikeFb.Factories;
 using WordLikeFb.Xml;
 
 namespace WordLikeFb
@@ -23,9 +24,7 @@ namespace WordLikeFb
             var currentParagraph = selection.Start.Paragraph;
             var parentSection = currentParagraph.Parent as Section;
 
-            var newSection = new Section();
-            var title = new Title();
-            newSection.Blocks.Add(title);
+            var newSection = WindowDocumentElementsFactory.CreateSection();
 
             var nP = new Paragraph();
             newSection.Blocks.Add(nP);
