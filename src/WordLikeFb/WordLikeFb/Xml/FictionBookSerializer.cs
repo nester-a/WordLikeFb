@@ -16,7 +16,7 @@ namespace WordLikeFb.Xml
         static readonly string[] _inlines = { "emphasis", "strong" };
         static readonly string[] _blocks = { "body", "section", "title", "p" };
 
-        static FrameworkContentElement? DeserializeByParent(XNode node, FrameworkContentElement parent)
+        static void DeserializeByParent(XNode node, FrameworkContentElement parent)
         {
             if (node is XText text)
             {
@@ -64,6 +64,9 @@ namespace WordLikeFb.Xml
                         case "body":
                             block = new Body();
                             break;
+                        case "title":
+                            block = new Title();
+                            break;
                         case "section":
                             block = new Section();
                             break;
@@ -71,12 +74,12 @@ namespace WordLikeFb.Xml
                             block = new Paragraph();
                             break;
                         default:
-                            return null;
+                            return;
                     }
 
-                    if (parent is IAddChild paragraph)
+                    if (parent is IAddChild container)
                     {
-                        paragraph.AddChild(block);
+                        container.AddChild(block);
                     }
 
                     currentElement = block;
@@ -84,15 +87,14 @@ namespace WordLikeFb.Xml
 
                 if (currentElement is null)
                 {
-                    return null;
+                    return;
                 }
 
                 foreach (var child in childs)
                 {
-                    child.FillTextElement(currentElement);
+                    DeserializeByParent(child, currentElement);
                 }
             }
-            return null;
         }
 
         public static FrameworkContentElement? Deserialize(XDocument document)
@@ -108,11 +110,7 @@ namespace WordLikeFb.Xml
 
             foreach (var child in bodies)
             {
-                var childElement = DeserializeByParent(child, flowDoc);
-                if (childElement != null && childElement is Block addChild)
-                {
-                    flowDoc.Blocks.Add(addChild);
-                }
+                DeserializeByParent(child, flowDoc);
             }
 
             return flowDoc;
@@ -161,10 +159,10 @@ namespace WordLikeFb.Xml
             {
                 var t = new XElement(_fb + "title");
 
-                foreach (var block in title.Inlines)
+                foreach (var block in title.Blocks)
                 {
-                    var txt = block is Run run ? run.Text : "";
-                    t.Add(new XText(txt));
+                    var element = Serialize(block);
+                    t.Add(element);
                 }
 
                 return t;
