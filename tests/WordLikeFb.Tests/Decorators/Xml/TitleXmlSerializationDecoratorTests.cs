@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WordLikeFb.Decorators.Xml;
 
-namespace WordLikeFb.Tests
+namespace WordLikeFb.Tests.Decorators.Xml
 {
     public class TitleXmlSerializationDecoratorTests : BaseXmlSerializationDecoratorTests
     {
@@ -15,8 +15,8 @@ namespace WordLikeFb.Tests
         }
 
         [Theory]
-        [InlineData("123","<title>123</title>")]
-        [InlineData("","<title>***</title>")]
+        [InlineData("123", "<title>123</title>")]
+        [InlineData("", "<title>***</title>")]
         public void Serialized(string titleInput, string expectedXml)
         {
             var sut = new TitleXmlSerializationDecorator(string.IsNullOrEmpty(titleInput) ? new() : new(titleInput));

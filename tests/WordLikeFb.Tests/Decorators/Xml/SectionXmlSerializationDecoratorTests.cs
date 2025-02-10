@@ -3,7 +3,7 @@ using System.Text;
 using System.Xml.Serialization;
 using WordLikeFb.Decorators.Xml;
 
-namespace WordLikeFb.Tests
+namespace WordLikeFb.Tests.Decorators.Xml
 {
     public class SectionXmlSerializationDecoratorTests
     {

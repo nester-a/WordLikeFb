@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using WordLikeFb.Decorators.Xml;
 
-namespace WordLikeFb.Tests
+namespace WordLikeFb.Tests.Decorators.Xml
 {
     public class EmphasisRunXmlSerializationDecoratorTests : BaseXmlSerializationDecoratorTests
     {

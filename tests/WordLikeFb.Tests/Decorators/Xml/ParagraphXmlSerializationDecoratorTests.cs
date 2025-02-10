@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WordLikeFb.Decorators.Xml;
 
-namespace WordLikeFb.Tests
+namespace WordLikeFb.Tests.Decorators.Xml
 {
     public enum ParagraphStyles
     {

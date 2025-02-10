@@ -5,7 +5,7 @@ using WordLikeFb.Decorators.Xml;
 using System.Windows.Documents;
 using System.Windows;
 
-namespace WordLikeFb.Tests
+namespace WordLikeFb.Tests.Decorators.Xml
 {
     public class StrongRunXmlSerializationDecoratorTests : BaseXmlSerializationDecoratorTests
     {
