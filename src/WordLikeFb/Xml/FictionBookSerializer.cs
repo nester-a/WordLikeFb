@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Xml.Linq;
+using WordLikeFb.Decorators;
 using WordLikeFb.Documents;
 using WordLikeFb.Factories;
 
@@ -66,7 +67,7 @@ namespace WordLikeFb.Xml
                             block = new Title();
                             break;
                         case "section":
-                            block = new Section();
+                            block = new SectionStartEndDecorator(new Section());
                             break;
                         case "p":
                             block = new Paragraph();
