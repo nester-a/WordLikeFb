@@ -6,5 +6,6 @@
         public const string P = "p";
         public const string Title = "title";
         public const string Strong = "strong";
+        public const string Emphasis = "emphasis";
     }
 }
