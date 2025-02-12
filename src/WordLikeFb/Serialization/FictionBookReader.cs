@@ -3,10 +3,11 @@ using System.Windows;
 using System.Xml.Linq;
 using WordLikeFb.Common;
 using WordLikeFb.Documents;
+using System.Text;
 
 namespace WordLikeFb.Serialization
 {
-    internal class FictionBookReader : IFictionBookReader
+    public class FictionBookReader : IFictionBookReader
     {
         public Body ReadBody(XElement bodyNode)
         {
@@ -50,30 +51,42 @@ namespace WordLikeFb.Serialization
         {
             var paragraph = new Paragraph();
 
-            foreach (var node in pNode.Elements())
+            if (!pNode.HasElements)
             {
-                var run = new Run() { Text = node.Value };
-
-                switch (node.Name.LocalName)
-                {
-                    case FbTypes.Strong:
-                        run.FontWeight = FontWeights.Bold;
-                        break;
-                    case FbTypes.Emphasis:
-                        run.FontStyle = FontStyles.Italic;
-                        break;
-                }
-
-                if (node.HasElements)
-                {
-                    var childNode = node.Element(XName.Get(node.Elements().First().Name.ToString()));
-
-                    if (childNode.Name.LocalName == FbTypes.Emphasis)
-                        run.FontStyle = FontStyles.Italic;
-                    else if (childNode.Name.LocalName == FbTypes.Strong)
-                        run.FontWeight = FontWeights.Bold;
-                }
+                var run = new Run() { Text = pNode.Value };
                 paragraph.Inlines.Add(run);
+            }
+            else
+            {
+                foreach (var child in pNode.Elements())
+                {
+                    var run = new Run() { Text = child.Value };
+
+                    switch (child.Name.LocalName)
+                    {
+                        case FbTypes.Strong:
+                            run.FontWeight = FontWeights.Bold;
+                            break;
+                        case FbTypes.Emphasis:
+                            run.FontStyle = FontStyles.Italic;
+                            break;
+                    }
+
+                    if (child.HasElements)
+                    {
+                        switch (child.Name.LocalName)
+                        {
+                            case FbTypes.Strong:
+                                run.FontStyle = FontStyles.Italic;
+                                break;
+                            case FbTypes.Emphasis:
+                                run.FontWeight = FontWeights.Bold;
+                                break;
+                        }
+                    }
+
+                    paragraph.Inlines.Add(run);
+                }
             }
 
             return paragraph;
