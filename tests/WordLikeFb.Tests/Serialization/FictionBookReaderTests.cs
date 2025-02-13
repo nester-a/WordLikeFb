@@ -1,4 +1,5 @@
-﻿using System.Windows.Documents;
+﻿using System.Windows;
+using System.Windows.Documents;
 using System.Xml.Linq;
 using WordLikeFb.Serialization;
 
@@ -7,8 +8,12 @@ namespace WordLikeFb.Tests.Serialization
     public class FictionBookReaderTests
     {
         [Theory]
-        [InlineData("<p>123</p>")]
-        public void ReadParagraph_works_well(string input)
+        [InlineData("<p>123</p>", false, false)]
+        [InlineData("<p><strong>123</strong></p>", false, true)]
+        [InlineData("<p><emphasis>123</emphasis></p>", true, false)]
+        [InlineData("<p><strong><emphasis>123</emphasis></strong></p>", true, true)]
+        [InlineData("<p><emphasis><strong>123</strong></emphasis></p>", true, true)]
+        public void ReadParagraph_plain(string input, bool isItalic, bool isStrong)
         {
             var sut = new FictionBookReader();
 
@@ -16,24 +21,12 @@ namespace WordLikeFb.Tests.Serialization
 
             var res = sut.ReadParagraph(fixture);
 
-            var text = string.Join(string.Empty, res.Inlines.Select(i => (i as Run).Text).ToArray());
+            Run run = res.Inlines.First() as Run;
 
-            Assert.Equal("123", text);
-        }
-
-        [Theory]
-        [InlineData("<p><strong>123</strong></p>")]
-        public void ReadParagraph_works_well(string input)
-        {
-            var sut = new FictionBookReader();
-
-            var fixture = XElement.Parse(input);
-
-            var res = sut.ReadParagraph(fixture);
-
-            var text = string.Join(string.Empty, res.Inlines.Select(i => (i as Run).Text).ToArray());
-
-            Assert.Equal("123", text);
+            Assert.NotNull(run);
+            Assert.Equal("123", run.Text);
+            Assert.Equal(isItalic, run.FontStyle == FontStyles.Italic);
+            Assert.Equal(isStrong, run.FontWeight == FontWeights.Bold);
         }
     }
 }

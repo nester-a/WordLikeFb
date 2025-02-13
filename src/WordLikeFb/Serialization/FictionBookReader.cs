@@ -3,7 +3,6 @@ using System.Windows;
 using System.Xml.Linq;
 using WordLikeFb.Common;
 using WordLikeFb.Documents;
-using System.Text;
 
 namespace WordLikeFb.Serialization
 {
@@ -60,36 +59,85 @@ namespace WordLikeFb.Serialization
             {
                 foreach (var child in pNode.Elements())
                 {
-                    var run = new Run() { Text = child.Value };
-
                     switch (child.Name.LocalName)
                     {
                         case FbTypes.Strong:
-                            run.FontWeight = FontWeights.Bold;
+                            var strong = ReadStrong(child);
+                            paragraph.Inlines.Add(strong);
                             break;
                         case FbTypes.Emphasis:
-                            run.FontStyle = FontStyles.Italic;
+                            var emphasis = ReadEmphasis(child);
+                            paragraph.Inlines.Add(emphasis);
                             break;
                     }
-
-                    if (child.HasElements)
-                    {
-                        switch (child.Name.LocalName)
-                        {
-                            case FbTypes.Strong:
-                                run.FontStyle = FontStyles.Italic;
-                                break;
-                            case FbTypes.Emphasis:
-                                run.FontWeight = FontWeights.Bold;
-                                break;
-                        }
-                    }
-
-                    paragraph.Inlines.Add(run);
                 }
             }
 
             return paragraph;
+        }
+
+        Run ReadStrong(XElement strongNode)
+        {
+            if (!strongNode.HasElements)
+            {
+                var run = new Run();
+                run.Text = strongNode.Value;
+                run.FontWeight = FontWeights.Bold;
+                return run;
+            }
+            else
+            {
+                Run? strong = null;
+                foreach (var child in strongNode.Elements())
+                {
+                    switch (child.Name.LocalName)
+                    {
+                        case FbTypes.Emphasis:
+                            strong = ReadEmphasis(child);
+                            break;
+                    }
+                }
+
+                if (strong is null)
+                {
+                    strong = new();
+                }
+
+                strong.FontWeight = FontWeights.Bold;
+                return strong;
+            }
+        }
+
+        Run ReadEmphasis(XElement emphasisNode)
+        {
+            if (!emphasisNode.HasElements)
+            {
+                var run = new Run();
+                run.Text = emphasisNode.Value;
+                run.FontStyle = FontStyles.Italic;
+                return run;
+            }
+            else
+            {
+                Run? emphasis = null;
+                foreach (var child in emphasisNode.Elements())
+                {
+                    switch (child.Name.LocalName)
+                    {
+                        case FbTypes.Strong:
+                            emphasis = ReadStrong(child);
+                            break;
+                    }
+                }
+
+                if (emphasis is null)
+                {
+                    emphasis = new();
+                }
+
+                emphasis.FontStyle = FontStyles.Italic;
+                return emphasis;
+            }
         }
     }
 }
