@@ -57,18 +57,27 @@ namespace WordLikeFb.Serialization
             }
             else
             {
-                foreach (var child in pNode.Elements())
+                var childs = pNode.Nodes();
+                foreach (var child in childs)
                 {
-                    switch (child.Name.LocalName)
+                    if(child is XText text)
                     {
-                        case FbTypes.Strong:
-                            var strong = ReadStrong(child);
-                            paragraph.Inlines.Add(strong);
-                            break;
-                        case FbTypes.Emphasis:
-                            var emphasis = ReadEmphasis(child);
-                            paragraph.Inlines.Add(emphasis);
-                            break;
+                        var run = new Run() { Text = text.Value };
+                        paragraph.Inlines.Add(run);
+                    }
+                    else if (child is XElement element)
+                    {
+                        switch (element.Name.LocalName)
+                        {
+                            case FbTypes.Strong:
+                                var strong = ReadStrong(element);
+                                paragraph.Inlines.Add(strong);
+                                break;
+                            case FbTypes.Emphasis:
+                                var emphasis = ReadEmphasis(element);
+                                paragraph.Inlines.Add(emphasis);
+                                break;
+                        }
                     }
                 }
             }

@@ -28,5 +28,44 @@ namespace WordLikeFb.Tests.Serialization
             Assert.Equal(isItalic, run.FontStyle == FontStyles.Italic);
             Assert.Equal(isStrong, run.FontWeight == FontWeights.Bold);
         }
+
+        [Theory]
+        [InlineData("<p>123123123</p>", 1)]
+        [InlineData("<p>123123<strong>123</strong></p>", 2)]
+        [InlineData("<p>123123<emphasis>123</emphasis></p>", 2)]
+        [InlineData("<p>123<strong>123</strong>123</p>", 3)]
+        [InlineData("<p>123<strong>123</strong><strong>123</strong></p>", 3)]
+        [InlineData("<p>123<strong>123</strong><emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p>123<emphasis>123</emphasis>123</p>", 3)]
+        [InlineData("<p>123<emphasis>123</emphasis><strong>123</strong></p>", 3)]
+        [InlineData("<p>123<emphasis>123</emphasis><emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><strong>123</strong>123123</p>", 2)]
+        [InlineData("<p><strong>123</strong>123<strong>123</strong></p>", 3)]
+        [InlineData("<p><strong>123</strong>123<emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><strong>123</strong><strong>123</strong>123</p>", 3)]
+        [InlineData("<p><strong>123</strong><strong>123</strong><strong>123</strong></p>", 3)]
+        [InlineData("<p><strong>123</strong><strong>123</strong><emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><strong>123</strong><emphasis>123</emphasis>123</p>", 3)]
+        [InlineData("<p><strong>123</strong><emphasis>123</emphasis><strong>123</strong></p>", 3)]
+        [InlineData("<p><strong>123</strong><emphasis>123</emphasis><emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis>123123</p>", 2)]
+        [InlineData("<p><emphasis>123</emphasis>123<strong>123</strong></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis>123<emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><strong>123</strong>123</p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><strong>123</strong><strong>123</strong></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><strong>123</strong><emphasis>123</emphasis></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis>123</p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis><strong>123</strong></p>", 3)]
+        [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis><emphasis>123</emphasis></p>", 3)]
+        public void ReadParagraph_composite(string input, int expectedCount)
+        {
+            var sut = new FictionBookReader();
+
+            var fixture = XElement.Parse(input, LoadOptions.None);
+
+            var res = sut.ReadParagraph(fixture);
+
+            Assert.Equal(expectedCount, res.Inlines.Count);
+        }
     }
 }
