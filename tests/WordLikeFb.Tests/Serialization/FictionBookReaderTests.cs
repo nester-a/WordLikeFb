@@ -98,5 +98,32 @@ namespace WordLikeFb.Tests.Serialization
 
             Assert.Equal(2, res.Blocks.Count);
         }
+
+        [Theory]
+        [InlineData("<body></body>", 0)]
+        [InlineData("<body><section></section></body>", 1)]
+        public void ReadBody_plain(string input, int expectedCount)
+        {
+            var sut = new FictionBookReader();
+
+            var fixture = XElement.Parse(input);
+
+            var res = sut.ReadBody(fixture);
+
+            Assert.Equal(expectedCount, res.Blocks.Count);
+        }
+
+        [Theory]
+        [InlineData("<body><section></section><section></section></body>")]
+        public void ReadBody_complex(string input)
+        {
+            var sut = new FictionBookReader();
+
+            var fixture = XElement.Parse(input);
+
+            var res = sut.ReadBody(fixture);
+
+            Assert.Equal(2, res.Blocks.Count);
+        }
     }
 }
