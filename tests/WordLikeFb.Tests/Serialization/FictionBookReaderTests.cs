@@ -21,12 +21,12 @@ namespace WordLikeFb.Tests.Serialization
 
             var res = sut.ReadParagraph(fixture);
 
-            Run run = res.Inlines.First() as Run;
+            Run? run = res.Inlines.First() as Run;
 
             Assert.NotNull(run);
-            Assert.Equal("123", run.Text);
-            Assert.Equal(isItalic, run.FontStyle == FontStyles.Italic);
-            Assert.Equal(isStrong, run.FontWeight == FontWeights.Bold);
+            Assert.Equal("123", run?.Text);
+            Assert.Equal(isItalic, run?.FontStyle == FontStyles.Italic);
+            Assert.Equal(isStrong, run?.FontWeight == FontWeights.Bold);
         }
 
         [Theory]
@@ -57,7 +57,7 @@ namespace WordLikeFb.Tests.Serialization
         [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis>123</p>", 3)]
         [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis><strong>123</strong></p>", 3)]
         [InlineData("<p><emphasis>123</emphasis><emphasis>123</emphasis><emphasis>123</emphasis></p>", 3)]
-        public void ReadParagraph_composite(string input, int expectedCount)
+        public void ReadParagraph_complex(string input, int expectedCount)
         {
             var sut = new FictionBookReader();
 
@@ -66,6 +66,37 @@ namespace WordLikeFb.Tests.Serialization
             var res = sut.ReadParagraph(fixture);
 
             Assert.Equal(expectedCount, res.Inlines.Count);
+        }
+
+        [Theory]
+        [InlineData("<section></section>", 0)]
+        [InlineData("<section><p></p></section>", 1)]
+        [InlineData("<section><section></section></section>", 1)]
+        public void ReadSection_plain(string input, int expectedCount)
+        {
+            var sut = new FictionBookReader();
+
+            var fixture = XElement.Parse(input);
+
+            var res = sut.ReadSection(fixture);
+
+            Assert.Equal(expectedCount, res.Blocks.Count);
+        }
+
+        [Theory]
+        [InlineData("<section><p></p><p></p></section>")]
+        [InlineData("<section><p></p><section></section></section>")]
+        [InlineData("<section><section></section><p></p></section>")]
+        [InlineData("<section><section></section><section></section></section>")]
+        public void ReadSection_complex(string input)
+        {
+            var sut = new FictionBookReader();
+
+            var fixture = XElement.Parse(input);
+
+            var res = sut.ReadSection(fixture);
+
+            Assert.Equal(2, res.Blocks.Count);
         }
     }
 }
