@@ -70,8 +70,11 @@ namespace WordLikeFb.Tests.Serialization
 
         [Theory]
         [InlineData("<section></section>", 0)]
+        [InlineData("<section/>", 0)]
         [InlineData("<section><p></p></section>", 1)]
+        [InlineData("<section><p/></section>", 1)]
         [InlineData("<section><section></section></section>", 1)]
+        [InlineData("<section><section/></section>", 1)]
         public void ReadSection_plain(string input, int expectedCount)
         {
             var sut = new FictionBookReader();
@@ -85,9 +88,13 @@ namespace WordLikeFb.Tests.Serialization
 
         [Theory]
         [InlineData("<section><p></p><p></p></section>")]
+        [InlineData("<section><p/><p/></section>")]
         [InlineData("<section><p></p><section></section></section>")]
+        [InlineData("<section><p/><section/></section>")]
         [InlineData("<section><section></section><p></p></section>")]
+        [InlineData("<section><section/><p/></section>")]
         [InlineData("<section><section></section><section></section></section>")]
+        [InlineData("<section><section/><section/></section>")]
         public void ReadSection_complex(string input)
         {
             var sut = new FictionBookReader();
@@ -117,6 +124,7 @@ namespace WordLikeFb.Tests.Serialization
 
         [Theory]
         [InlineData("<body><section></section><section></section></body>")]
+        [InlineData("<body><section/><section/></body>")]
         public void ReadBody_complex(string input)
         {
             var sut = new FictionBookReader();

@@ -9,9 +9,9 @@ namespace WordLikeFb.Tests.Serialization
     public class FictionBookWriterTests
     {
         [Theory]
-        [InlineData("<body></body>", 0)]
-        [InlineData("<body><section></section></body>", 1)]
-        [InlineData("<body><section></section><section></section></body>", 2)]
+        [InlineData("<body />", 0)]
+        [InlineData("<body><section /></body>", 1)]
+        [InlineData("<body><section /><section /></body>", 2)]
         public void WriteBody_tests(string expectedJson, int childCount)
         {
             var b = new Body();
