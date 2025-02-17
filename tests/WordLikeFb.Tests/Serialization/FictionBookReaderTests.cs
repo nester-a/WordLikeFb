@@ -101,7 +101,9 @@ namespace WordLikeFb.Tests.Serialization
 
         [Theory]
         [InlineData("<body></body>", 0)]
+        [InlineData("<body/>", 0)]
         [InlineData("<body><section></section></body>", 1)]
+        [InlineData("<body><section/></body>", 1)]
         public void ReadBody_plain(string input, int expectedCount)
         {
             var sut = new FictionBookReader();

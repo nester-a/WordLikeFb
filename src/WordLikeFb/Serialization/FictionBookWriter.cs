@@ -6,7 +6,7 @@ using WordLikeFb.Documents;
 
 namespace WordLikeFb.Serialization
 {
-    internal class FictionBookWriter : IFictionBookWriter
+    public class FictionBookWriter : IFictionBookWriter
     {
         public void WriteBody(XmlWriter writer, Body body)
         {
