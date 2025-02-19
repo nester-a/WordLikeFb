@@ -42,7 +42,7 @@ namespace WordLikeFb.Serialization
 
             foreach (Run run in p.Inlines)
             {
-                if (run.FontWeight == FontWeights.Normal && run.FontStyle == FontStyles.Normal)
+                if (run.FontWeight != FontWeights.Bold && run.FontStyle != FontStyles.Italic)
                 {
                     writer.WriteValue(run.Text);
                 }
