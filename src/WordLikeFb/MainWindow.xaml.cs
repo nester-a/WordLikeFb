@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
+using WordLikeFb.Decorators;
 using WordLikeFb.Factories;
 using WordLikeFb.Serialization;
 
@@ -15,6 +16,68 @@ namespace WordLikeFb
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Sections_Visible(object sender, RoutedEventArgs e)
+        {
+            var blocks = rtbEditor.Document.Blocks;
+
+            if (blocks.Count == 0)
+            {
+                return;
+            }
+
+            var queue = new Queue<Section>();
+            foreach (var block in blocks)
+            {
+                if (block is Section subSection)
+                {
+                    queue.Enqueue(subSection);
+                }
+            }
+
+            do
+            {
+                var subSection = queue.Dequeue();
+                var subDecorated = MadeSectionVisible(subSection);
+                rtbEditor.Document.Blocks.InsertAfter(subSection, subDecorated);
+                rtbEditor.Document.Blocks.Remove(subSection);
+            } while (queue.Count > 0);
+        }
+
+        private SectionStartEndDecorator MadeSectionVisible(Section section)
+        {
+            var decorated = new SectionStartEndDecorator(section);
+
+            if (section.Blocks.Count == 0)
+            {
+                return decorated;
+            }
+
+            var queue = new Queue<Section>();
+            foreach (var block in section.Blocks)
+            {
+                if(block is Section subSection)
+                {
+                    queue.Enqueue(subSection);
+                }
+            }
+
+            do
+            {
+                var subSection = queue.Dequeue();
+                var subDecorated = MadeSectionVisible(subSection);
+                section.Blocks.InsertAfter(subSection, subDecorated);
+                section.Blocks.Remove(subSection);
+            } while (queue.Count > 0);
+
+
+            return decorated;
+        }
+
+        private void Sections_Unvisible(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Create_SubSection(object sender, RoutedEventArgs e)

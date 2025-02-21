@@ -18,6 +18,7 @@
                 <MenuItem Header="_Выход" Click="ExitApp_Click"/>
             </MenuItem>
                 <MenuItem Header="_Структура">
+                    <MenuItem Header="Показать секции" IsCheckable="True" Checked="Sections_Visible" Unchecked="Sections_Unvisible"/>
                     <MenuItem Header="Добавить подсекцию" Click="Create_SubSection"/>
                     <MenuItem Header="Закрыть секцию"/>
                 </MenuItem>
@@ -32,7 +33,6 @@
         <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,20,10,0">
             <FlowDocument>
                 <docs:Body>
-                    <Section/>
                 </docs:Body>
             </FlowDocument>
         </RichTextBox>
