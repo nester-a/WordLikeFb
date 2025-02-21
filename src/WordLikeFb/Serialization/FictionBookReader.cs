@@ -16,7 +16,7 @@ namespace WordLikeFb.Serialization
             {
                 if (node.Name.LocalName.Equals(FbTypes.Section))
                 {
-                    var block = ReadBody(node);
+                    var block = ReadSection(node);
                     body.Blocks.Add(block);
                 }
             }

@@ -1,6 +1,5 @@
 ﻿using System.Windows.Documents;
 using System.Windows.Media;
-using System.Xml.Serialization;
 
 namespace WordLikeFb.Documents
 {

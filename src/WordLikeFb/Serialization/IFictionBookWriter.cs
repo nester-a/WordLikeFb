@@ -4,7 +4,7 @@ using WordLikeFb.Documents;
 
 namespace WordLikeFb.Serialization
 {
-    internal interface IFictionBookWriter
+    public interface IFictionBookWriter
     {
         void WriteBody(XmlWriter writer, Body body);
         void WriteSection(XmlWriter writer, Section section);

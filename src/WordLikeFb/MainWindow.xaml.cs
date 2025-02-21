@@ -1,10 +1,9 @@
 ﻿using Microsoft.Win32;
+using System.IO;
 using System.Windows;
 using System.Windows.Documents;
-using System.Xml.Linq;
-using WordLikeFb.Documents;
 using WordLikeFb.Factories;
-using WordLikeFb.Xml;
+using WordLikeFb.Serialization;
 
 namespace WordLikeFb
 {
@@ -127,60 +126,18 @@ namespace WordLikeFb
 
         private void LoadFb2(string filePath)
         {
-            var doc = FB2DocumentReader.Read(filePath);
+            //var doc = FB2DocumentReader.Read(filePath);
+            var text = File.ReadAllText(filePath);
+            var flowDoc = new FictionBookSerializer().Deserialize(text);
 
-            var flowDoc = FictionBookSerializer.Deserialize(doc);
-
-            rtbEditor.Document = flowDoc as FlowDocument;
+            rtbEditor.Document = flowDoc;
         }
 
         private void SaveFb2(string filePath)
         {
-            var doc = FictionBookSerializer.Serialize(rtbEditor.Document);
-            (doc as XDocument).Save(filePath);
-        }
-
-        private void SaveXml(string filePath)
-        {
-            try
-            {
-                XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
-                XElement root = new XElement("document");
-                doc.Add(root);
-
-                foreach (Block block in rtbEditor.Document.Blocks)
-                {
-                    Paragraph paragraph = block as Paragraph;
-                    if (paragraph != null)
-                    {
-                        XElement paraElem = new XElement("paragraph",
-                            new XAttribute("fontSize", paragraph.FontSize),
-                            new XAttribute("fontFamily", paragraph.FontFamily.Source),
-                            new XAttribute("textAlignment", paragraph.TextAlignment));
-
-                        foreach (Inline inline in paragraph.Inlines)
-                        {
-                            Run run = inline as Run;
-                            if (run != null)
-                            {
-                                XElement runElem = new XElement("run",
-                                    new XAttribute("fontWeight", run.FontWeight),
-                                    new XAttribute("fontStyle", run.FontStyle),
-                                    run.Text);
-                                paraElem.Add(runElem);
-                            }
-                        }
-
-                        root.Add(paraElem);
-                    }
-                }
-
-                doc.Save(filePath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сохранении файла: {ex.Message}");
-            }
+            var doc = new FictionBookSerializer().Serialize(rtbEditor.Document);
+            File.WriteAllText(filePath, doc);
+            //(doc as XDocument).Save(filePath);
         }
 
         // Обработчик события нажатия кнопки "Открыть"

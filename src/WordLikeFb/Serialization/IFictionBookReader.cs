@@ -4,7 +4,7 @@ using WordLikeFb.Documents;
 
 namespace WordLikeFb.Serialization
 {
-    internal interface IFictionBookReader
+    public interface IFictionBookReader
     {
         Body ReadBody(XElement bodyNode);
         Section ReadSection(XElement sectionNode);

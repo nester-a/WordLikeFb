@@ -31,7 +31,9 @@
         <!-- Область редактирования -->
         <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,20,10,0">
             <FlowDocument>
-                <docs:Body/>
+                <docs:Body>
+                    <Section/>
+                </docs:Body>
             </FlowDocument>
         </RichTextBox>
     </Grid>

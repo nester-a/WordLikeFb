@@ -7,8 +7,9 @@ using WordLikeFb.Documents;
 
 namespace WordLikeFb.Serialization
 {
-    internal class FictionBookSerializer
+    public class FictionBookSerializer
     {
+        static readonly XNamespace _fb = "http://www.gribuser.ru/xml/fictionbook/2.0";
         readonly IFictionBookWriter _writer;
         readonly IFictionBookReader _reader;
 
@@ -31,6 +32,10 @@ namespace WordLikeFb.Serialization
             using (var writer = XmlWriter.Create(sb))
             {
                 writer.WriteStartDocument();
+                //XNamespace xlink = "http://www.w3.org/1999/xlink";
+                //var links = new XAttribute(XNamespace.Xmlns + "xlink", xlink);
+                //var root = new XElement(@namespace + "FictionBook", links);
+                writer.WriteStartElement("FictionBook", _fb.NamespaceName);
 
                 foreach (var block in flowDocument.Blocks)
                 {
@@ -39,6 +44,8 @@ namespace WordLikeFb.Serialization
                         _writer.WriteBody(writer, body);
                     }
                 }
+
+                writer.WriteEndElement();
 
                 writer.WriteEndDocument();
             }
