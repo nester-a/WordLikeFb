@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WordLikeFb"
+        xmlns:docs="clr-namespace:WordLikeFb.Documents"
+        xmlns:decor="clr-namespace:WordLikeFb.Decorators"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -16,6 +17,10 @@
                 <Separator/>
                 <MenuItem Header="_Выход" Click="ExitApp_Click"/>
             </MenuItem>
+                <MenuItem Header="_Структура">
+                    <MenuItem Header="Добавить подсекцию" Click="Create_SubSection"/>
+                    <MenuItem Header="Закрыть секцию"/>
+                </MenuItem>
             <MenuItem Header="_Форматирование">
                 <MenuItem Header="_Полужирный" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked"/>
                 <MenuItem Header="_Курсив" IsCheckable="True" Checked="Italic_Checked" Unchecked="Italic_Unchecked"/>
@@ -24,6 +29,12 @@
         </Menu>
         </DockPanel>
         <!-- Область редактирования -->
-        <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,41,10,0" />
+        <RichTextBox Name="rtbEditor" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,20,10,0">
+            <FlowDocument>
+                <docs:Body>
+                    <Section/>
+                </docs:Body>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>
