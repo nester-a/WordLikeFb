@@ -3,7 +3,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Documents;
 using WordLikeFb.Decorators;
-using WordLikeFb.Factories;
 using WordLikeFb.Serialization;
 
 namespace WordLikeFb
@@ -23,8 +22,8 @@ namespace WordLikeFb
         private void Structure_Visible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-            StructureIsVisible = true;
             MakeStructureVisible(blocks);
+            StructureIsVisible = true;
         }
 
         private void MakeStructureVisible(BlockCollection blocks)
@@ -57,9 +56,42 @@ namespace WordLikeFb
             } while (current is not null);
         }
 
-        private void Sections_Unvisible(object sender, RoutedEventArgs e)
+        private void MakeStructureUnvisible(BlockCollection blocks)
         {
+            if (blocks.Count == 0)
+            {
+                return;
+            }
+            var current = blocks.FirstBlock;
+            do
+            {
+                var next = current?.NextBlock;
 
+                if (current is not SectionStartEndDecorator decoreted)
+                {
+                    current = next;
+                    continue;
+                }
+
+                blocks.Remove(decoreted);
+                var section = decoreted.DecorationTarget;
+
+                MakeStructureUnvisible(section.Blocks);
+
+                if (next is not null)
+                    blocks.InsertBefore(next, section);
+                else
+                    blocks.Add(section);
+
+                current = next;
+            } while (current is not null);
+        }
+
+        private void Structure_Unvisible(object sender, RoutedEventArgs e)
+        {
+            var blocks = rtbEditor.Document.Blocks;
+            MakeStructureUnvisible(blocks);
+            StructureIsVisible = false;
         }
 
         private void Create_SubSection(object sender, RoutedEventArgs e)
