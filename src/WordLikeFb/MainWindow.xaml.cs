@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using System.Collections;
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
@@ -14,36 +13,38 @@ namespace WordLikeFb
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool StructureIsVisible { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Sections_Visible(object sender, RoutedEventArgs e)
+        private void Structure_Visible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-
-            MadeSectionsVisible(blocks);
+            StructureIsVisible = true;
+            MakeStructureVisible(blocks);
         }
 
-        private void MadeSectionsVisible(BlockCollection blocks)
+        private void MakeStructureVisible(BlockCollection blocks)
         {
             if (blocks.Count == 0)
             {
                 return;
             }
             var current = blocks.FirstBlock;
-            var end = blocks.LastBlock;
             do
             {
+                var next = current?.NextBlock;
+
                 if (current is not Section subSection)
                 {
+                    current = next;
                     continue;
                 }
 
-                MadeSectionsVisible(subSection.Blocks);
-
-                var next = subSection.NextBlock;
+                MakeStructureVisible(subSection.Blocks);
 
                 blocks.Remove(subSection);
                 var decorated = new SectionStartEndDecorator(subSection);
@@ -51,7 +52,9 @@ namespace WordLikeFb
                     blocks.InsertBefore(next, decorated);
                 else
                     blocks.Add(decorated);
-            } while (current != end);
+
+                current = next;
+            } while (current is not null);
         }
 
         private void Sections_Unvisible(object sender, RoutedEventArgs e)
@@ -65,10 +68,10 @@ namespace WordLikeFb
             var currentParagraph = selection.Start.Paragraph;
             var parentSection = currentParagraph.Parent as Section;
 
-            var newSection = WindowDocumentElementsFactory.CreateSection();
-
             var nP = new Paragraph();
-            newSection.Blocks.Add(nP);
+            var section = new Section(nP);
+            var newSection = StructureIsVisible ? new SectionStartEndDecorator(section) : section;
+
             parentSection?.Blocks.Add(newSection);
 
             rtbEditor.CaretPosition = nP.ContentStart;
