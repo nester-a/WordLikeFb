@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.Collections;
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
@@ -22,57 +23,35 @@ namespace WordLikeFb
         {
             var blocks = rtbEditor.Document.Blocks;
 
+            MadeSectionsVisible(blocks);
+        }
+
+        private void MadeSectionsVisible(BlockCollection blocks)
+        {
             if (blocks.Count == 0)
             {
                 return;
             }
-
-            var queue = new Queue<Section>();
-            foreach (var block in blocks)
-            {
-                if (block is Section subSection)
-                {
-                    queue.Enqueue(subSection);
-                }
-            }
-
+            var current = blocks.FirstBlock;
+            var end = blocks.LastBlock;
             do
             {
-                var subSection = queue.Dequeue();
-                var subDecorated = MadeSectionVisible(subSection);
-                rtbEditor.Document.Blocks.InsertAfter(subSection, subDecorated);
-                rtbEditor.Document.Blocks.Remove(subSection);
-            } while (queue.Count > 0);
-        }
-
-        private SectionStartEndDecorator MadeSectionVisible(Section section)
-        {
-            var decorated = new SectionStartEndDecorator(section);
-
-            if (section.Blocks.Count == 0)
-            {
-                return decorated;
-            }
-
-            var queue = new Queue<Section>();
-            foreach (var block in section.Blocks)
-            {
-                if(block is Section subSection)
+                if (current is not Section subSection)
                 {
-                    queue.Enqueue(subSection);
+                    continue;
                 }
-            }
 
-            do
-            {
-                var subSection = queue.Dequeue();
-                var subDecorated = MadeSectionVisible(subSection);
-                section.Blocks.InsertAfter(subSection, subDecorated);
-                section.Blocks.Remove(subSection);
-            } while (queue.Count > 0);
+                MadeSectionsVisible(subSection.Blocks);
 
+                var next = subSection.NextBlock;
 
-            return decorated;
+                blocks.Remove(subSection);
+                var decorated = new SectionStartEndDecorator(subSection);
+                if (next is not null)
+                    blocks.InsertBefore(next, decorated);
+                else
+                    blocks.Add(decorated);
+            } while (current != end);
         }
 
         private void Sections_Unvisible(object sender, RoutedEventArgs e)

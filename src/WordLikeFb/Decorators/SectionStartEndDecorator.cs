@@ -8,7 +8,7 @@ namespace WordLikeFb.Decorators
     {
         public SectionStartEndDecorator() : this(new()) { }
         public SectionStartEndDecorator(Section section)
-            : this(section, "Начало секции", "Конец секции") { }
+            : this(section, $"Начало {section.GetType().Name}", $"Конец {section.GetType().Name}") { }
 
         public SectionStartEndDecorator(Section section, string sectionStartText, string sectionEndText)
         {
