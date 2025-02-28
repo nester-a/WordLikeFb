@@ -34,11 +34,7 @@
             <FlowDocument>
                 <docs:Body>
                     <Section>
-                        <Paragraph>First para</Paragraph>
-                        <Paragraph>Second para</Paragraph>
-                        <Section>
-                            <Paragraph>Sub para</Paragraph>
-                        </Section>
+                        <Paragraph/>
                     </Section>
                 </docs:Body>
             </FlowDocument>
