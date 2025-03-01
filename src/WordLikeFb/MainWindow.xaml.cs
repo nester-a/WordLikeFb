@@ -98,7 +98,23 @@ namespace WordLikeFb
         {
             TextSelection selection = rtbEditor.Selection;
             var currentParagraph = selection.Start.Paragraph;
-            var parentSection = currentParagraph.Parent as Section;
+            var currentSection = currentParagraph.Parent as Section;
+
+            var nP = new Paragraph();
+            var section = new Section(nP);
+            var newSection = StructureIsVisible ? new SectionStartEndDecorator(section) : section;
+
+            currentSection?.Blocks.Add(newSection);
+
+            rtbEditor.CaretPosition = nP.ContentStart;
+        }
+
+        private void Close_CurrentSection(object sender, RoutedEventArgs e)
+        {
+            TextSelection selection = rtbEditor.Selection;
+            var currentParagraph = selection.Start.Paragraph;
+            var currentSection = currentParagraph.Parent as Section;
+            var parentSection = currentSection?.Parent as Section;
 
             var nP = new Paragraph();
             var section = new Section(nP);
@@ -107,6 +123,7 @@ namespace WordLikeFb
             parentSection?.Blocks.Add(newSection);
 
             rtbEditor.CaretPosition = nP.ContentStart;
+
         }
 
         // Обработчик события нажатия кнопки "Новый"

@@ -20,7 +20,7 @@
                 <MenuItem Header="_Структура">
                     <MenuItem Header="Показать структуру" IsCheckable="True" Checked="Structure_Visible" Unchecked="Structure_Unvisible"/>
                     <MenuItem Header="Добавить подсекцию" Click="Create_SubSection"/>
-                    <MenuItem Header="Закрыть секцию"/>
+                    <MenuItem Header="Закрыть секцию" Click="Close_CurrentSection"/>
                 </MenuItem>
             <MenuItem Header="_Форматирование">
                 <MenuItem Header="_Полужирный" IsCheckable="True" Checked="Bold_Checked" Unchecked="Bold_Unchecked"/>
