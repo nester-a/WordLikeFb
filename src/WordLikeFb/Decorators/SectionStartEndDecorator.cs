@@ -13,9 +13,9 @@ namespace WordLikeFb.Decorators
         public SectionStartEndDecorator(Section section, string sectionStartText, string sectionEndText)
         {
             DecorationTarget = section;
-            Blocks.Add(new ImmutableParagrath(sectionStartText));
+            Blocks.Add(new StructureNode(sectionStartText));
             Blocks.Add(section);
-            Blocks.Add(new ImmutableParagrath(sectionEndText));
+            Blocks.Add(new StructureNode(sectionEndText));
         }
 
         public Section DecorationTarget {  get; }
