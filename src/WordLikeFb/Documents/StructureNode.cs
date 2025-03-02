@@ -13,7 +13,6 @@ namespace WordLikeFb.Documents
                 Text = text, 
                 IsEnabled = false, 
                 Foreground = new SolidColorBrush(Colors.LightGray),
-                BaselineAlignment = System.Windows.BaselineAlignment.Center
             };
             
             Child = new TextBlock(r);

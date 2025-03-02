@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
+using WordLikeFb.Decoration;
 using WordLikeFb.Decorators;
 using WordLikeFb.Serialization;
 
@@ -14,83 +15,25 @@ namespace WordLikeFb
     {
         public bool StructureIsVisible { get; set; }
 
+        public SectionDecoratorWrapper<SectionStartEndDecorator> DecorationWrapper { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            DecorationWrapper = new ();
         }
 
         private void Structure_Visible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-            MakeStructureVisible(blocks);
+            DecorationWrapper.Wrap(blocks);
             StructureIsVisible = true;
-        }
-
-        private void MakeStructureVisible(BlockCollection blocks)
-        {
-            if (blocks.Count == 0)
-            {
-                return;
-            }
-            var current = blocks.FirstBlock;
-            do
-            {
-                var next = current?.NextBlock;
-
-                if (current is not Section subSection)
-                {
-                    current = next;
-                    continue;
-                }
-
-                MakeStructureVisible(subSection.Blocks);
-
-                blocks.Remove(subSection);
-                var decorated = new SectionStartEndDecorator(subSection);
-                if (next is not null)
-                    blocks.InsertBefore(next, decorated);
-                else
-                    blocks.Add(decorated);
-
-                current = next;
-            } while (current is not null);
-        }
-
-        private void MakeStructureUnvisible(BlockCollection blocks)
-        {
-            if (blocks.Count == 0)
-            {
-                return;
-            }
-            var current = blocks.FirstBlock;
-            do
-            {
-                var next = current?.NextBlock;
-
-                if (current is not SectionStartEndDecorator decoreted)
-                {
-                    current = next;
-                    continue;
-                }
-
-                blocks.Remove(decoreted);
-                var section = decoreted.DecorationTarget;
-
-                MakeStructureUnvisible(section.Blocks);
-
-                if (next is not null)
-                    blocks.InsertBefore(next, section);
-                else
-                    blocks.Add(section);
-
-                current = next;
-            } while (current is not null);
         }
 
         private void Structure_Unvisible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-            MakeStructureUnvisible(blocks);
+            DecorationWrapper.Unwrap(blocks);
             StructureIsVisible = false;
         }
 
