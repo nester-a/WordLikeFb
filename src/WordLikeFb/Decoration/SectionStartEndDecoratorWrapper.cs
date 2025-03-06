@@ -3,7 +3,7 @@ using WordLikeFb.Decorators;
 
 namespace WordLikeFb.Decoration
 {
-    public class SectionDecoratorWrapper<TDecorator> where TDecorator : SectionDecorator<Section>, new()
+    public class SectionStartEndDecoratorWrapper
     {
         public void Wrap(BlockCollection blocks)
         {
@@ -25,7 +25,7 @@ namespace WordLikeFb.Decoration
                 Wrap(subSection.Blocks);
 
                 blocks.Remove(subSection);
-                var decorated = new TDecorator() { DecorationTarget = subSection };
+                var decorated = new SectionStartEndDecorator(subSection);
                 if (next is not null)
                     blocks.InsertBefore(next, decorated);
                 else
@@ -46,7 +46,7 @@ namespace WordLikeFb.Decoration
             {
                 var next = current?.NextBlock;
 
-                if (current is not TDecorator decoreted)
+                if (current is not SectionStartEndDecorator decoreted)
                 {
                     current = next;
                     continue;

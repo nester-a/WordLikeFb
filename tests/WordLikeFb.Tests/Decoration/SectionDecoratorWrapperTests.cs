@@ -13,9 +13,9 @@ namespace WordLikeFb.Tests.Decoration
 
     public class SectionDecoratorWrapperTests
     {
-        SectionDecoratorWrapper<SectionStartEndDecorator> CreateSut()
+        SectionStartEndDecoratorWrapper CreateSut()
         {
-            return new();
+            return new() ;
         }
 
         [WpfTheory]
@@ -91,33 +91,24 @@ namespace WordLikeFb.Tests.Decoration
             for (int i = 0; i < parentCount; i++)
             {
                 var body = new Body();
+                flowDoc.Blocks.Add(body);
                 for (int j = 0; j < childCount; j++)
                 {
                     body.Blocks.Add(new Section());
                 }
-                flowDoc.Blocks.Add(body);
             }
             var sut = CreateSut();
 
             sut.Wrap(flowDoc.Blocks);
 
-            var totalCount = 0;
-            foreach (var block in flowDoc.Blocks)
-            {
-                if(block is SectionStartEndDecorator decoratedBody && decoratedBody.DecorationTarget is Body)
-                {
-                    totalCount++;
-                    foreach (var childBlock in decoratedBody.DecorationTarget.Blocks)
-                    {
-                        if(childBlock is SectionStartEndDecorator decoratedSection && decoratedSection.DecorationTarget is Section)
-                        {
-                            totalCount++;
-                        }
-                    }
-                }
-            }
-
-            Assert.Equal(parentCount + parentCount * childCount, totalCount);
+            var wrapped = flowDoc.Blocks.All(block =>  block is SectionStartEndDecorator decoratedBody && 
+                                                       decoratedBody.DecorationTarget is Body body &&
+                                                       body.Parent is SectionStartEndDecorator &&
+                                                       body.Blocks.All(childBlock => childBlock is SectionStartEndDecorator decoratedSection && 
+                                                                                     decoratedSection.DecorationTarget is Section section &&
+                                                                                     section.Parent is SectionStartEndDecorator));
+            
+            Assert.True(wrapped);
         }
     }
 }

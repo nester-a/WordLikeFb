@@ -15,25 +15,25 @@ namespace WordLikeFb
     {
         public bool StructureIsVisible { get; set; }
 
-        public SectionDecoratorWrapper<SectionStartEndDecorator> DecorationWrapper { get; set; }
+        SectionStartEndDecoratorWrapper Wrapper { get; }
 
         public MainWindow()
         {
             InitializeComponent();
-            DecorationWrapper = new ();
+            Wrapper = new();
         }
 
         private void Structure_Visible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-            DecorationWrapper.Wrap(blocks);
+            Wrapper.Wrap(blocks);
             StructureIsVisible = true;
         }
 
         private void Structure_Unvisible(object sender, RoutedEventArgs e)
         {
             var blocks = rtbEditor.Document.Blocks;
-            DecorationWrapper.Unwrap(blocks);
+            Wrapper.Unwrap(blocks);
             StructureIsVisible = false;
         }
 

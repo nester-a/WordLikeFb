@@ -2,16 +2,13 @@
 
 namespace WordLikeFb.Decorators
 {
-    public abstract class SectionDecorator<T> : Section where T : Section, new()
+    public abstract class SectionDecorator<T> : Section where T : Section
     {
-        public T DecorationTarget { get; init; }
-        public SectionDecorator(T target)
+        public T DecorationTarget { get; }
+        public SectionDecorator(T target) : base(target)
         {
             DecorationTarget = target;
-        }
-        public SectionDecorator() : this(new T())
-        {
-            
+            Blocks.Add(target);
         }
     }
 }
