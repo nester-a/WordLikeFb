@@ -21,7 +21,7 @@ namespace WordLikeFb.Tests.Decoration
         [WpfTheory]
         [InlineData(CreateTarget.Body)]
         [InlineData(CreateTarget.Section)]
-        public void One_node_decorated(CreateTarget target)
+        public void One_node_wrapped(CreateTarget target)
         {
             var flow = new FlowDocument();
             Section sect = target switch 
@@ -42,7 +42,7 @@ namespace WordLikeFb.Tests.Decoration
         [WpfTheory]
         [InlineData(CreateTarget.Body, typeof(Body))]
         [InlineData(CreateTarget.Section, typeof(Section))]
-        public void One_node_decorated_with_correct_target(CreateTarget target, Type targetType)
+        public void One_node_wrapped_with_correct_target(CreateTarget target, Type targetType)
         {
             var flowDoc = new FlowDocument();
             Section sect = target switch
@@ -66,7 +66,7 @@ namespace WordLikeFb.Tests.Decoration
         [InlineData(2)]
         [InlineData(3)]
         [InlineData(4)]
-        public void Many_node_decorated(int nodesCount)
+        public void Many_node_wrapped(int nodesCount)
         {
             var flowDoc = new FlowDocument();
             for (int i = 0; i < nodesCount; i++)
@@ -85,7 +85,7 @@ namespace WordLikeFb.Tests.Decoration
         [InlineData(2,2)]
         [InlineData(3,3)]
         [InlineData(4,4)]
-        public void Many_nodes_with_many_childs_decorated(int parentCount, int childCount)
+        public void Many_nodes_with_many_childs_wrapped(int parentCount, int childCount)
         {
             var flowDoc = new FlowDocument();
             for (int i = 0; i < parentCount; i++)
@@ -109,6 +109,34 @@ namespace WordLikeFb.Tests.Decoration
                                                                                      section.Parent is SectionStartEndDecorator));
             
             Assert.True(wrapped);
+        }
+
+        [WpfTheory]
+        [InlineData(2, 2)]
+        [InlineData(3, 3)]
+        [InlineData(4, 4)]
+        public void Many_nodes_with_many_childs_unwrapped(int parentCount, int childCount)
+        {
+            var flowDoc = new FlowDocument();
+            for (int i = 0; i < parentCount; i++)
+            {
+                var body = new SectionStartEndDecorator(new Body());
+                flowDoc.Blocks.Add(body);
+                for (int j = 0; j < childCount; j++)
+                {
+                    body.Blocks.Add(new SectionStartEndDecorator(new Section()));
+                }
+            }
+            var sut = CreateSut();
+
+            sut.Unwrap(flowDoc.Blocks);
+
+            var unwrapped = flowDoc.Blocks.All(block => block is Body body &&
+                                                        body.Parent is FlowDocument &&
+                                                        body.Blocks.All(childBlock => childBlock is Section section &&
+                                                                                      section.Parent is Body));
+
+            Assert.True(unwrapped);
         }
     }
 }

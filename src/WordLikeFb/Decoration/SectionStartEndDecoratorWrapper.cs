@@ -22,10 +22,12 @@ namespace WordLikeFb.Decoration
                     continue;
                 }
 
+                blocks.Remove(subSection);
+
+                var decorated = new SectionStartEndDecorator(subSection);
+
                 Wrap(subSection.Blocks);
 
-                blocks.Remove(subSection);
-                var decorated = new SectionStartEndDecorator(subSection);
                 if (next is not null)
                     blocks.InsertBefore(next, decorated);
                 else
@@ -53,7 +55,8 @@ namespace WordLikeFb.Decoration
                 }
 
                 blocks.Remove(decoreted);
-                var section = decoreted.DecorationTarget;
+
+                var section = decoreted.InjectTarget();
 
                 Unwrap(section.Blocks);
 
