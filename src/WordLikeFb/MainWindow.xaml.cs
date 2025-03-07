@@ -60,10 +60,10 @@ namespace WordLikeFb
             var parentSection = currentSection?.Parent as Section;
 
             var nP = new Paragraph();
-            var section = new Section(nP);
-            var newSection = StructureIsVisible ? new SectionStartEndDecorator(section) : section;
+            //var section = new Section(nP);
+            //var newSection = StructureIsVisible ? new SectionStartEndDecorator(section) : section;
 
-            parentSection?.Blocks.Add(newSection);
+            parentSection?.Blocks.Add(nP);
 
             rtbEditor.CaretPosition = nP.ContentStart;
 

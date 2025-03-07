@@ -34,19 +34,7 @@
             <FlowDocument>
                 <docs:Body>
                     <Section>
-                        <Paragraph>
-                            <Run>1</Run>
-                        </Paragraph>
-                        <Section>
-                            <Paragraph>
-                                <Run>1.1</Run>
-                            </Paragraph>
-                        </Section>
-                    </Section>
-                    <Section>
-                        <Paragraph>
-                            <Run>2</Run>
-                        </Paragraph>
+                        <Paragraph/>
                     </Section>
                 </docs:Body>
             </FlowDocument>
